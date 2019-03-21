@@ -18,9 +18,13 @@
   },
   "homepage": "https://github.com/EdiOancea/ferret-api#readme",
   "dependencies": {
-    "express": "4.16.4"
+    "express": "4.16.4",
+    "pg": "7.9.0",
+    "sequelize": "5.1.0",
+    "sequelize-cli": "5.4.0"
   },
   "devDependencies": {
+    "debug": "4.1.1",
     "nodemon": "1.18.10"
-  }
+  },
 }
