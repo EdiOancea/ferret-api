@@ -1,52 +1,111 @@
-'use strict';
+const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('user', {
     firstName: {
-      type: Sequelize.STRING,
-      field: 'first_name',
-      unique: 'compositeIndex',
+      type: DataTypes.STRING,
+      defaultValue: "",
+      allowNull: false,
       validate: {
-        len: [3, 250],
-        is: /([A-Z][a-z]{2,20}\s)*([A-Z][a-z]{2,20})$/
+        notNull: {
+          args: true,
+          msg: 'Invalid first name format.',
+        },
+        is: {
+          args: /^[a-zA-Z.\s'-]{3,250}$/,
+          msg: "Invalid first name format.",
+        }
       },
     },
     lastName: {
-      type: Sequelize.STRING,
-      field: 'last_name',
-      unique: 'compositeIndex',
+      type: DataTypes.STRING,
+      defaultValue: "",
+      allowNull: false,
       validate: {
-        is: /^[A-Z][a-z]{2,20}$/,
+        notNull: {
+          args: true,
+          msg: 'Invalid last name format.',
+        },
+        is: {
+          args: /^[a-zA-Z.\s'-]{3,250}$/,
+          msg: "Invalid last name format.",
+        }
       },
     },
     email: {
-      type: Sequelize.STRING,
-      field: 'email',
+      type: DataTypes.STRING,
       unique: true,
+      defaultValue: "",
+      allowNull: false,
       validate: {
-        isEmail: true,
+        notNull: {
+          args: true,
+          msg: 'Invalid email format.',
+        },
+        isEmail: {
+          args: true,
+          msg: "Invalid email format.",
+        },
       },
     },
     password: {
-      type: Sequelize.STRING,
-      field: 'password',
+      type: DataTypes.STRING,
+      defaultValue: "",
       allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Password needs to be between 8 to 20 characters long.',
+        },
+        len: {
+          args: [8, 20],
+          msg: "Password needs to be between 8 to 20 characters long.",
+        },
+      },
     },
     rating: {
-      type: Sequelize.DOUBLE,
-      field: 'rating',
-      min: 0,
-      max: 10,
-      defaultValue: 0.0,
+      type: DataTypes.DOUBLE,
+      defaultValue: 0,
       allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Rating can not be lower than 0.',
+        },
+        min: {
+          args: [0],  //???
+          msg: "Rating can not be lower than 0.",
+        },
+        max: {
+          args: 10,
+          msg: "Rating can not be higher than 10.",
+        },
+      },
     },
-    active: {
-      type: Sequelize.BOOLEAN,
-      field: 'active',
-      defaultValue: true,
-      allowNull: false,
+  }, {
+    timestamps: true,
+    paranoid: true,
+    underscored: true,
+    defaultScope: {
+      attributes: {
+        exclude: ['password'], // Does not return password on select querries.
+      },
     },
-  }, {});
-  
+    hooks: {
+      beforeCreate: async (user, options) => {
+        user.password = bcrypt.hashSync(user.password, 10);
+        user.email = user.email.toLowerCase();
+      },
+      beforeUpdate: async (user, options) => {
+        if (user.changed('password')) {
+          user.password = bcrypt.hashSync(user.password, 10);
+        }
+        if (user.changed('email')) {
+          user.email = user.email.toLowerCase();
+        }
+      },
+    },
+  });
+
   return User;
 };
