@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         is: {
           args: /^[a-zA-Z.\s'-]{3,250}$/,
           msg: "Invalid last name format.",
-        }
+        },
       },
     },
     email: {
@@ -89,6 +89,11 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope: {
       attributes: {
         exclude: ['password'], // Does not return password on select querries.
+      },
+    },
+    scopes: {
+      auth: {
+        attributes: ['password', 'id'],
       },
     },
     hooks: {

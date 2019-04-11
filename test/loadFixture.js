@@ -15,4 +15,4 @@ const dbConfig = {
 module.exports = async (fixture) => {
   await cleandb();
   await sqlFixtures.create(dbConfig, fixture, (err, res) => {});
-}
+};

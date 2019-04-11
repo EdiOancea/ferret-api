@@ -40,6 +40,6 @@ class UserRepository {
        individualHooks: true,
     });
   }
-}
+};
 
 module.exports = new UserRepository();

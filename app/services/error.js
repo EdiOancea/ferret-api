@@ -19,6 +19,6 @@ class ErrorService {
 
     throw err;
   }
-}
+};
 
 module.exports = new ErrorService();

@@ -43,10 +43,10 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => return queryInterface.bulkDelete('users', null, {}),
-}
+};
 
 const hashPassword = async (password) => {
   saltRounds = 10;
 
   return await bcrypt.hash(password, saltRounds);
-}
+};

@@ -2,6 +2,7 @@
 Icon?
 ._*
 node_modules
+*.env
 package-lock.json
 *.log
 *.gz

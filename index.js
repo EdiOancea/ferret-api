@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+require('dotenv').config();
+
 const userRouter = require('./app/routes/user');
+const signinRouter = require('./app/routes/signin');
 const sequelizeErrorParser = require('./app/services/sequelizeErrorParser');
 const app = express();
 app.use(bodyParser.json());
@@ -8,6 +11,7 @@ app.use(bodyParser.json());
 const port = process.env.PORT;
 
 app.use('/api', userRouter);
+app.use('/api', signinRouter);
 
 app.use((err, req, res, next) => {
   const sequelizeErrors = sequelizeErrorParser(err);

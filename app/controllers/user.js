@@ -17,6 +17,6 @@ class UserController {
   async getUser(req, res, next) {
     res.json(await userService.getUser(req.params.id));
   }
-}
+};
 
 module.exports = new UserController();
