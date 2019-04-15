@@ -6,7 +6,7 @@ class UserService {
   async getUser(id) {
     let foundUser = await userRepository.getUser(id);
     if (!foundUser) {
-      error.throwNotFoundError("User not found.");
+      error.throwNotFoundError('User not found.');
     }
 
     return foundUser;
@@ -16,9 +16,10 @@ class UserService {
     if (user.email) {
       const userExists = await userRepository.getUserByEmail(user.email);
       if (userExists) {
-        error.throwValidationError("Email already used.");
+        error.throwValidationError('Email already used.');
       }
     }
+
     const createdUser = await userRepository.createUser(user);
 
     return await this.getUser(createdUser.id);
@@ -34,13 +35,15 @@ class UserService {
 
   async updateUser(id, newUserData) {
     if (newUserData.id !== undefined) {
-      error.throwValidationError("You can not change the id.");
+      error.throwValidationError('You can not change the id.');
     }
+
     if (newUserData.email !== undefined) {
-      error.throwValidationError("You can not change the email.");
+      error.throwValidationError('You can not change the email.');
     }
+
     if (newUserData.password !== undefined) {
-      error.throwValidationError("You can not change the password.");
+      error.throwValidationError('You can not change the password.');
     }
 
     await this.getUser(id);

@@ -5,7 +5,7 @@ const wrapError = require('../services/wrapError');
 const userRouter = express.Router();
 
 userRouter.route('/users')
-  .post(wrapError(userController.createUser))
+  .post(wrapError(userController.createUser));
 
 userRouter.route('/users/:id')
   .delete(wrapError(userController.deleteUser))

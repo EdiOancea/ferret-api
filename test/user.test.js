@@ -20,9 +20,9 @@ describe('CRUD user', () => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
               id: 1,
-              firstName: "Test First Name",
-              lastName: "Testlastname",
-              email: "test.email1@gmail.ro",
+              firstName: 'Test First Name',
+              lastName: 'Testlastname',
+              email: 'test.email1@gmail.ro',
               deletedAt: null,
               rating: 5,
             });
@@ -37,7 +37,7 @@ describe('CRUD user', () => {
           .get('/api/users/2')
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -49,7 +49,7 @@ describe('CRUD user', () => {
           .get('/api/users/404')
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -60,37 +60,37 @@ describe('CRUD user', () => {
     describe('when a valid user is posted', () => {
       it('returns the user', done => {
         request(app)
-          .post('/api/users')
-          .send({
-          	firstName: 'Test First Name',
-          	lastName: 'Testlastname',
-          	email: 'testemailpost@gmail.com',
-          	password: 'testpassword',
+        .post('/api/users')
+        .send({
+          firstName: 'Test First Name',
+          lastName: 'Testlastname',
+          email: 'testemailpost@gmail.com',
+          password: 'testpassword',
+          rating: 4,
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(_.omit(res.body, ['createdAt', 'updatedAt', 'id'])).to.deep.equal({
+            firstName: 'Test First Name',
+            lastName: 'Testlastname',
+            email: 'testemailpost@gmail.com',
             rating: 4,
-          })
-          .end((err, res) => {
-            expect(res.status).to.equal(200);
-            expect(_.omit(res.body, ['createdAt', 'updatedAt', 'id'])).to.deep.equal({
-            	firstName: 'Test First Name',
-            	lastName: 'Testlastname',
-            	email: 'testemailpost@gmail.com',
-              rating: 4,
-              deletedAt: null,
-            });
-            done();
+            deletedAt: null,
           });
+          done();
+        });
       });
     });
 
     describe('when email is not included', () => {
       it('returns 422', done => {
         request(app)
-          .post('/api/users')
-          .send({
-          	firstName: 'Test First Name',
-          	lastName: 'Testlastname',
-          	password: 'testpassword',
-          })
+        .post('/api/users')
+        .send({
+          firstName: 'Test First Name',
+          lastName: 'Testlastname',
+          password: 'testpassword',
+        })
           .end((err, res) => {
             expect(res.status).to.equal(422);
             expect(res.body).to.deep.equal({
@@ -107,7 +107,7 @@ describe('CRUD user', () => {
           .post('/api/users')
           .send({
             email: 'testemail@gmail.com',
-          	password: 'testpassword',
+            password: 'testpassword',
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
@@ -126,8 +126,8 @@ describe('CRUD user', () => {
           .post('/api/users')
           .send({
             email: 'testemail@gmail.com',
-          	firstName: 'Test First Name',
-          	lastName: 'Testlastname',
+            firstName: 'Test First Name',
+            lastName: 'Testlastname',
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
@@ -158,7 +158,7 @@ describe('CRUD user', () => {
               password: 'Password needs to be between 8 to 20 characters long.',
             });
             done();
-          })
+          });
       });
     });
 
@@ -167,14 +167,14 @@ describe('CRUD user', () => {
         request(app)
           .post('/api/users')
           .send({
-          	firstName: 'Eduard Algo',
-          	lastName: 'Oancea',
-          	email: 'test.email1@gmail.ro',
-          	password: 'saluttitutti',
+            firstName: 'Eduard Algo',
+            lastName: 'Oancea',
+            email: 'test.email1@gmail.ro',
+            password: 'saluttitutti',
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
-            expect(res.body).to.equal('Email already used.');
+            expect(res.body).to.deep.equal({ message: 'Email already used.' });
             done();
           });
       });
@@ -207,7 +207,7 @@ describe('CRUD user', () => {
           .delete('/api/users/10')
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -219,7 +219,7 @@ describe('CRUD user', () => {
           .delete('/api/users/2')
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -234,7 +234,7 @@ describe('CRUD user', () => {
           .send({})
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -247,7 +247,7 @@ describe('CRUD user', () => {
           .send({})
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.equal('User not found.');
+            expect(res.body).to.deep.equal({ message: 'User not found.' });
             done();
           });
       });
@@ -256,12 +256,11 @@ describe('CRUD user', () => {
     describe('when invalid data is send', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/users/4')
-          .send({
-          	firstName: 'Eduar-5yeet',
-          	lastName: 'Yeeet11',
-
-          })
+        .put('/api/users/4')
+        .send({
+          firstName: 'Eduar-5yeet',
+          lastName: 'Yeeet11',
+        })
           .end((err, res) => {
             expect(res.status).to.equal(422);
             expect(res.body).to.deep.equal({
@@ -282,7 +281,7 @@ describe('CRUD user', () => {
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
-            expect(res.body).to.equal('You can not change the email.');
+            expect(res.body).to.deep.equal({ message: 'You can not change the email.' });
             done();
           });
       });
@@ -297,7 +296,7 @@ describe('CRUD user', () => {
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
-            expect(res.body).to.equal('You can not change the id.');
+            expect(res.body).to.deep.equal({ message: 'You can not change the id.' });
             done();
           });
       });
@@ -312,7 +311,7 @@ describe('CRUD user', () => {
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
-            expect(res.body).to.equal('You can not change the password.');
+            expect(res.body).to.deep.equal({ message: 'You can not change the password.' });
             done();
           });
       });

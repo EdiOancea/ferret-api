@@ -9,12 +9,12 @@ class SigninService {
   async authenticate({ email, password }) {
     const user = await signinRepository.getUserPassword(email);
     if (!user) {
-      errorService.throwValidationError("Invalid credentials.");
+      errorService.throwValidationError('Invalid credentials.');
     }
 
     const res = bcrypt.compareSync(password, user.password);
     if (!res) {
-      errorService.throwValidationError("Invalid credentials.");
+      errorService.throwValidationError('Invalid credentials.');
     }
 
     return jwt.sign({ id: user.id }, privateKey, { expiresIn: 3600 });

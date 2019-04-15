@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('user', {
     firstName: {
       type: DataTypes.STRING,
-      defaultValue: "",
+      defaultValue: '',
       allowNull: false,
       validate: {
         notNull: {
@@ -13,13 +13,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         is: {
           args: /^[a-zA-Z.\s'-]{3,250}$/,
-          msg: "Invalid first name format.",
-        }
+          msg: 'Invalid first name format.',
+        },
       },
     },
     lastName: {
       type: DataTypes.STRING,
-      defaultValue: "",
+      defaultValue: '',
       allowNull: false,
       validate: {
         notNull: {
@@ -28,14 +28,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         is: {
           args: /^[a-zA-Z.\s'-]{3,250}$/,
-          msg: "Invalid last name format.",
+          msg: 'Invalid last name format.',
         },
       },
     },
     email: {
       type: DataTypes.STRING,
       unique: true,
-      defaultValue: "",
+      defaultValue: '',
       allowNull: false,
       validate: {
         notNull: {
@@ -44,13 +44,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         isEmail: {
           args: true,
-          msg: "Invalid email format.",
+          msg: 'Invalid email format.',
         },
       },
     },
     password: {
       type: DataTypes.STRING,
-      defaultValue: "",
+      defaultValue: '',
       allowNull: false,
       validate: {
         notNull: {
@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         len: {
           args: [8, 20],
-          msg: "Password needs to be between 8 to 20 characters long.",
+          msg: 'Password needs to be between 8 to 20 characters long.',
         },
       },
     },
@@ -73,12 +73,12 @@ module.exports = (sequelize, DataTypes) => {
           msg: 'Rating can not be lower than 0.',
         },
         min: {
-          args: [0],  //???
-          msg: "Rating can not be lower than 0.",
+          args: [0],
+          msg: 'Rating can not be lower than 0.',
         },
         max: {
           args: 10,
-          msg: "Rating can not be higher than 10.",
+          msg: 'Rating can not be higher than 10.',
         },
       },
     },
@@ -101,10 +101,12 @@ module.exports = (sequelize, DataTypes) => {
         user.password = bcrypt.hashSync(user.password, 10);
         user.email = user.email.toLowerCase();
       },
+
       beforeUpdate: async (user, options) => {
         if (user.changed('password')) {
           user.password = bcrypt.hashSync(user.password, 10);
         }
+
         if (user.changed('email')) {
           user.email = user.email.toLowerCase();
         }

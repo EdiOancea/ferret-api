@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const app = require('../index');
 const userFixture = require('../fixtures/user');
 const loadFixture = require('./loadFixture');
-const privateKey = process.env.JWT_SECRET
+const privateKey = process.env.JWT_SECRET;
 
 describe('Sign In', () => {
   before(async () => {
@@ -39,7 +39,7 @@ describe('Sign In', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          expect(res.body).to.equal('Invalid credentials.');
+          expect(res.body).to.deep.equal({ message: 'Invalid credentials.' });
           done();
         });
     });
@@ -55,7 +55,7 @@ describe('Sign In', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          expect(res.body).to.equal('Invalid credentials.');
+          expect(res.body).to.deep.equal({ message: 'Invalid credentials.' });
           done();
         });
     });

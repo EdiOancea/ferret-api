@@ -33,11 +33,11 @@ class UserRepository {
 
   updateUser(id, newUserData) {
     return db.user.update(newUserData, {
-       where: {
-         id,
-         deletedAt: null,
-       },
-       individualHooks: true,
+      where: {
+        id,
+        deletedAt: null,
+      },
+      individualHooks: true,
     });
   }
 };
