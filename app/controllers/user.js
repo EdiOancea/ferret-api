@@ -2,20 +2,20 @@ const userService = require('../services/user');
 const errorService = require('../services/error');
 
 class UserController {
-  async createUser(req, res, next) {
-    res.json(await userService.createUser(req.body));
+  async create(req, res, next) {
+    res.json(await userService.create(req.body));
   }
 
-  async deleteUser(req, res, next) {
-    res.json(await userService.deleteUser(req.params.id));
+  async delete(req, res, next) {
+    res.json(await userService.delete(req.params.id));
   }
 
-  async updateUser(req, res, next) {
-    res.json(await userService.updateUser(req.params.id, req.body));
+  async update(req, res, next) {
+    res.json(await userService.update(req.params.id, req.body));
   }
 
-  async getUser(req, res, next) {
-    res.json(await userService.getUser(req.params.id));
+  async get(req, res, next) {
+    res.json(await userService.get(req.params.id));
   }
 };
 

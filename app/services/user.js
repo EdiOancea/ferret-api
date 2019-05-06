@@ -3,8 +3,8 @@ const error = require('../services/error');
 const sequelizeErrorParser = require('./sequelizeErrorParser');
 
 class UserService {
-  async getUser(id) {
-    let foundUser = await userRepository.getUser(id);
+  async get(id) {
+    let foundUser = await userRepository.get(id);
     if (!foundUser) {
       error.throwNotFoundError('User not found.');
     }
@@ -12,48 +12,48 @@ class UserService {
     return foundUser;
   }
 
-  async createUser(user) {
+  async create(user) {
     if (user.id) {
       error.throwValidationError('Invalid user format.');
     }
 
     if (user.email) {
-      const userExists = await userRepository.getUserByEmail(user.email);
+      const userExists = await userRepository.getByEmail(user.email);
       if (userExists) {
         error.throwValidationError('Email already used.');
       }
     }
 
-    const createdUser = await userRepository.createUser(user);
+    const createdUser = await userRepository.create(user);
 
-    return await this.getUser(createdUser.id);
+    return await this.get(createdUser.id);
   }
 
-  async deleteUser(id) {
-    await this.getUser(id);
-    await userRepository.deleteUser(id);
-    const deletedUser =  await userRepository.getUserNonParanoid(id);
+  async delete(id) {
+    await this.get(id);
+    await userRepository.delete(id);
+    const deletedUser =  await userRepository.getNonParanoid(id);
 
     return deletedUser;
   }
 
-  async updateUser(id, newUserData) {
-    if (newUserData.id !== undefined) {
+  async update(id, newData) {
+    if (newData.id !== undefined) {
       error.throwValidationError('You can not change the id.');
     }
 
-    if (newUserData.email !== undefined) {
+    if (newData.email !== undefined) {
       error.throwValidationError('You can not change the email.');
     }
 
-    if (newUserData.password !== undefined) {
+    if (newData.password !== undefined) {
       error.throwValidationError('You can not change the password.');
     }
 
-    await this.getUser(id);
-    await userRepository.updateUser(id, newUserData);
+    await this.get(id);
+    await userRepository.update(id, newData);
 
-    return await this.getUser(id);
+    return await this.get(id);
   }
 };
 

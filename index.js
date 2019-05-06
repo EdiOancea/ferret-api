@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const userRouter = require('./app/routes/user');
+const addressRouter = require('./app/routes/address');
 const signinRouter = require('./app/routes/signin');
 const sequelizeErrorParser = require('./app/services/sequelizeErrorParser');
 const port = process.env.PORT;
@@ -12,6 +13,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use('/api', addressRouter);
 app.use('/api', userRouter);
 app.use('/api', signinRouter);
 

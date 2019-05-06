@@ -1,5 +1,5 @@
 module.exports = (errors) => {
-  if (errors.name !== 'SequelizeValidationError') {
+  if (errors.name.slice(0, 9) !== 'Sequelize') {
     return null;
   }
 

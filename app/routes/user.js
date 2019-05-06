@@ -5,11 +5,11 @@ const wrapError = require('../services/wrapError');
 const userRouter = express.Router();
 
 userRouter.route('/users')
-  .post(wrapError(userController.createUser));
+  .post(wrapError(userController.create));
 
 userRouter.route('/users/:id')
-  .delete(wrapError(userController.deleteUser))
-  .put(wrapError(userController.updateUser))
-  .get(wrapError(userController.getUser));
+  .delete(wrapError(userController.delete))
+  .put(wrapError(userController.update))
+  .get(wrapError(userController.get));
 
 module.exports = userRouter;
