@@ -13,6 +13,10 @@ class UserService {
   }
 
   async createUser(user) {
+    if (user.id) {
+      error.throwValidationError('Invalid user format.');
+    }
+
     if (user.email) {
       const userExists = await userRepository.getUserByEmail(user.email);
       if (userExists) {

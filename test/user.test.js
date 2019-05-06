@@ -82,6 +82,23 @@ describe('CRUD user', () => {
       });
     });
 
+    describe('when an id is included', () => {
+      it('returns 422', done => {
+        request(app)
+          .post('/api/users')
+          .send({
+            id: 3,
+          })
+          .end((err, res) => {
+            expect(res.status).to.equal(422);
+            expect(res.body).to.deep.equal({
+              message: 'Invalid user format.',
+            });
+            done();
+          });
+      });
+    });
+
     describe('when email is not included', () => {
       it('returns 422', done => {
         request(app)
@@ -91,13 +108,13 @@ describe('CRUD user', () => {
           lastName: 'Testlastname',
           password: 'testpassword',
         })
-          .end((err, res) => {
-            expect(res.status).to.equal(422);
-            expect(res.body).to.deep.equal({
-              email: 'Invalid email format.',
-            });
-            done();
+        .end((err, res) => {
+          expect(res.status).to.equal(422);
+          expect(res.body).to.deep.equal({
+            email: 'Invalid email format.',
           });
+          done();
+        });
       });
     });
 
