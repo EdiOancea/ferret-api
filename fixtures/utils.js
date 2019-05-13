@@ -21,7 +21,15 @@ const createAddress = address => ({
   ...address,
 });
 
+const createFieldOfActivity = field => ({
+  deleted_at: null,
+  created_at: new Date(),
+  updated_at: new Date(),
+  ...field,
+});
+
 module.exports = {
   createUser,
   createAddress,
+  createFieldOfActivity,
 };

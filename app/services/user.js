@@ -1,24 +1,15 @@
+const CrudService = require('./crudService');
 const userRepository = require('../repositories/user');
-const error = require('../services/error');
-const sequelizeErrorParser = require('./sequelizeErrorParser');
+const error = require('./error');
 
-class UserService {
-  async get(id) {
-    let foundUser = await userRepository.get(id);
-    if (!foundUser) {
-      error.throwNotFoundError('User not found.');
-    }
-
-    return foundUser;
-  }
-
+class UserService extends CrudService {
   async create(user) {
     if (user.id) {
       error.throwValidationError('Invalid user format.');
     }
 
     if (user.email) {
-      const userExists = await userRepository.getByEmail(user.email);
+      const userExists = await userRepository.getByPropsNonParanoid({ email: user.email });
       if (userExists) {
         error.throwValidationError('Email already used.');
       }
@@ -27,14 +18,6 @@ class UserService {
     const createdUser = await userRepository.create(user);
 
     return await this.get(createdUser.id);
-  }
-
-  async delete(id) {
-    await this.get(id);
-    await userRepository.delete(id);
-    const deletedUser =  await userRepository.getNonParanoid(id);
-
-    return deletedUser;
   }
 
   async update(id, newData) {
@@ -57,4 +40,7 @@ class UserService {
   }
 };
 
-module.exports = new UserService();
+module.exports = new UserService({
+  repositoryName: 'user',
+  modelName: 'User',
+});

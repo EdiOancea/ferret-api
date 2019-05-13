@@ -1,23 +1,14 @@
+const CrudService = require('../services/CrudService');
 const addressRepository = require('../repositories/address');
 const error = require('../services/error');
-const sequelizeErrorParser = require('./sequelizeErrorParser');
 
-class AddressService {
-  async get(id) {
-    let foundAddress = await addressRepository.get(id);
-    if (!foundAddress) {
-      error.throwNotFoundError('Address not found.');
-    }
-
-    return foundAddress;
-  }
-
+class AddressService extends CrudService {
   async create(address) {
     if (address.id) {
       error.throwValidationError('Invalid address format.');
     }
 
-    const addressExists = await addressRepository.getByAddress(address);
+    const addressExists = await addressRepository.getByPropsNonParanoid(address);
     if (addressExists) {
       error.throwValidationError('Address already exists.');
     }
@@ -25,14 +16,6 @@ class AddressService {
     const createdAddress = await addressRepository.create(address);
 
     return await this.get(createdAddress.id);
-  }
-
-  async delete(id) {
-    await this.get(id);
-    await addressRepository.delete(id);
-    const deletedAddress =  await addressRepository.getNonParanoid(id);
-
-    return deletedAddress;
   }
 
   async update(id, newData) {
@@ -47,4 +30,7 @@ class AddressService {
   }
 };
 
-module.exports = new AddressService();
+module.exports = new AddressService({
+  repositoryName: 'address',
+  modelName: 'Address',
+});

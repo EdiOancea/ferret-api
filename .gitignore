@@ -1,5 +1,6 @@
 .DS_Store*
 Icon?
+.nyc_output
 ._*
 node_modules
 *.env
