@@ -22,5 +22,12 @@ module.exports = (sequelize, DataTypes) => {
     underscored: true,
   });
 
+  FieldOfActivity.associate = models => {
+    FieldOfActivity.hasMany(models.companies, {
+      foreignKey: 'fieldOfActivityId',
+      onDelete: 'CASCADE',
+    });
+  };
+
   return FieldOfActivity;
 };

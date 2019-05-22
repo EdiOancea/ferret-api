@@ -114,5 +114,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  User.associate = models => {
+    User.belongsTo(models.companies, {
+      foreignKey: 'companyId',
+      onDelete: 'SET NULL',
+    });
+  };
+
   return User;
 };

@@ -1,6 +1,8 @@
 const createAddress = require('./utils').createAddress;
+const companyFixture = require('./company');
 
 module.exports = {
+  ...companyFixture,
   addresses: [
     {
       country: 'Test-CountryOne',

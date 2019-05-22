@@ -15,16 +15,17 @@ describe('CRUD address', () => {
     describe('when an existing address is fetched', () => {
       it('returns the address', done => {
         request(app)
-          .get('/api/addresses/1')
+          .get('/api/addresses/4')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
-              id: 1,
-              country: 'Test-CountryOne',
-              apartmentNumber: 1,
+              id: 4,
+              country: 'Test-CountryFour',
+              companyId: 1,
+              apartmentNumber: 0,
               city: 'Test-City',
               streetName: 'Test street Name',
-              streetNumber: 3,
+              streetNumber: 0,
               deletedAt: null,
             });
             done();
@@ -68,6 +69,7 @@ describe('CRUD address', () => {
           streetName: 'Test street Name',
           streetNumber: 33,
           apartmentNumber: 100,
+          companyId: 1,
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
@@ -77,6 +79,7 @@ describe('CRUD address', () => {
             streetName: 'Test street Name',
             streetNumber: 33,
             apartmentNumber: 100,
+            companyId: 1,
             deletedAt: null,
           });
           done();
@@ -110,6 +113,7 @@ describe('CRUD address', () => {
           city: 'Test-City',
           streetNumber: 3,
           apartmentNumber: 13,
+          companyId: 1,
         })
         .end((err, res) => {
           expect(res.status).to.equal(422);
@@ -131,12 +135,28 @@ describe('CRUD address', () => {
             streetName: 'Test street123 Name',
             streetNumber: 3,
             apartmentNumber: 13,
+            companyId: 1,
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
             expect(res.body).to.deep.equal({
               streetName: 'Invalid street name format.',
             });
+            done();
+          });
+      });
+    });
+
+    describe('when company id is invalid', () => {
+      it('returns 404', done => {
+        request(app)
+          .post('/api/addresses')
+          .send({
+            companyId: 100,
+          })
+          .end((err, res) => {
+            expect(res.status).to.equal(404);
+            expect(res.body).to.deep.equal({ message: 'Company not found.' });
             done();
           });
       });
@@ -155,7 +175,8 @@ describe('CRUD address', () => {
               country: 'Test-CountryOne',
               city: 'Test-City',
               streetName: 'Test street Name',
-              streetNumber: 3,
+              streetNumber: 0,
+              companyId: 1,
               apartmentNumber: 1,
             });
             expect(res.body.deletedAt).to.not.equal(null);
@@ -179,7 +200,7 @@ describe('CRUD address', () => {
     describe('when an already deleted address is deleted', ()=> {
       it('returns 404', done => {
         request(app)
-          .delete('/api/addresses/2')
+          .delete('/api/addresses/1')
           .end((err, res) => {
             expect(res.status).to.equal(404);
             expect(res.body).to.deep.equal({ message: 'Address not found.' });
@@ -207,7 +228,7 @@ describe('CRUD address', () => {
     describe('when a deleted address is updated', () => {
       it('returns 404', done => {
         request(app)
-          .put('/api/addresses/2')
+          .put('/api/addresses/1')
           .send({})
           .end((err, res) => {
             expect(res.status).to.equal(404);
@@ -220,7 +241,7 @@ describe('CRUD address', () => {
     describe('when invalid data is send', () => {
       it('returns 422', done => {
         request(app)
-        .put('/api/addresses/4')
+        .put('/api/addresses/3')
         .send({
           country: 'oof222',
         })
@@ -237,7 +258,7 @@ describe('CRUD address', () => {
     describe('when an id is sent', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/addresses/4')
+          .put('/api/addresses/3')
           .send({
             id: 13,
           })
@@ -252,7 +273,7 @@ describe('CRUD address', () => {
     describe('when valid data is sent', () => {
       it('returns the modified address', done => {
         request(app)
-          .put('/api/addresses/4')
+          .put('/api/addresses/3')
           .send({
             country: 'Sambuca',
             city: 'Amterminat',
@@ -261,12 +282,13 @@ describe('CRUD address', () => {
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
-              id: 4,
+              id: 3,
               country: 'Sambuca',
               city: 'Amterminat',
               streetName: 'Bifoofay',
-              streetNumber: 3,
-              apartmentNumber: 13,
+              streetNumber: 0,
+              companyId: 1,
+              apartmentNumber: 0,
               deletedAt: null,
             });
             done();
@@ -277,13 +299,13 @@ describe('CRUD address', () => {
     describe('when update results in duplicates', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/addresses/4')
+          .put('/api/addresses/3')
           .send({
-            country: 'Test-CountryOne',
+            country: 'Test-CountryFour',
             city: 'Test-City',
             streetName: 'Test street Name',
-            streetNumber: 3,
-            apartmentNumber: 1,
+            streetNumber: 0,
+            apartmentNumber: 0,
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);

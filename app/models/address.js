@@ -87,5 +87,12 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
   });
 
+  Address.associate = models => {
+    Address.belongsTo(models.companies, {
+      foreignKey: 'companyId',
+      onDelete: 'CASCADE',
+    });
+  };
+
   return Address;
 };

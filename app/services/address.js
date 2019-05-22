@@ -1,10 +1,11 @@
-const CrudService = require('../services/CrudService');
+const CrudService = require('./CrudService');
+const companyService = require('./company');
 const addressRepository = require('../repositories/address');
-const error = require('../services/error');
+const error = require('./error');
 
 class AddressService extends CrudService {
   async create(address) {
-    if (address.id) {
+    if (address.id || address.companyId === undefined) {
       error.throwValidationError('Invalid address format.');
     }
 
@@ -13,6 +14,7 @@ class AddressService extends CrudService {
       error.throwValidationError('Address already exists.');
     }
 
+    await companyService.get(address.companyId);
     const createdAddress = await addressRepository.create(address);
 
     return await this.get(createdAddress.id);

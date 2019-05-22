@@ -15,16 +15,17 @@ describe('CRUD user', () => {
     describe('when an existing user is fetched', () => {
       it('returns the user', done => {
         request(app)
-          .get('/api/users/1')
+          .get('/api/users/3')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
-              id: 1,
+              id: 3,
+              companyId: 1,
               firstName: 'Test First Name',
               lastName: 'Testlastname',
               email: 'test.email1@gmail.ro',
               deletedAt: null,
-              rating: 5,
+              rating: 0,
             });
             done();
           });
@@ -34,7 +35,7 @@ describe('CRUD user', () => {
     describe('when a deleted user is fetched', () => {
       it('returns 404', done => {
         request(app)
-          .get('/api/users/2')
+          .get('/api/users/1')
           .end((err, res) => {
             expect(res.status).to.equal(404);
             expect(res.body).to.deep.equal({ message: 'User not found.' });
@@ -67,6 +68,7 @@ describe('CRUD user', () => {
           email: 'testemailpost@gmail.com',
           password: 'testpassword',
           rating: 4,
+          companyId: 1,
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
@@ -76,6 +78,7 @@ describe('CRUD user', () => {
             email: 'testemailpost@gmail.com',
             rating: 4,
             deletedAt: null,
+            companyId: 1,
           });
           done();
         });
@@ -202,15 +205,16 @@ describe('CRUD user', () => {
     describe('when an existing user is deleted', () => {
       it('returns the user', done => {
         request(app)
-          .delete('/api/users/1')
+          .delete('/api/users/3')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt', 'deletedAt'])).to.deep.equal({
-              id: 1,
+              id: 3,
               email: 'test.email1@gmail.ro',
               firstName: 'Test First Name',
               lastName: 'Testlastname',
-              rating: 5,
+              rating: 0,
+              companyId: 1,
             });
             expect(res.body.deletedAt).to.not.equal(null);
             done();
@@ -233,7 +237,7 @@ describe('CRUD user', () => {
     describe('when an already deleted user is deleted', ()=> {
       it('returns 404', done => {
         request(app)
-          .delete('/api/users/2')
+          .delete('/api/users/1')
           .end((err, res) => {
             expect(res.status).to.equal(404);
             expect(res.body).to.deep.equal({ message: 'User not found.' });
@@ -260,7 +264,7 @@ describe('CRUD user', () => {
     describe('when a deleted user is updated', () => {
       it('returns 404', done => {
         request(app)
-          .put('/api/users/2')
+          .put('/api/users/1')
           .send({})
           .end((err, res) => {
             expect(res.status).to.equal(404);
@@ -270,29 +274,29 @@ describe('CRUD user', () => {
       });
     });
 
-    describe('when invalid data is send', () => {
+    describe('when invalid data is sent', () => {
       it('returns 422', done => {
         request(app)
-        .put('/api/users/4')
+        .put('/api/users/2')
         .send({
           firstName: 'Eduar-5yeet',
           lastName: 'Yeeet11',
         })
-          .end((err, res) => {
-            expect(res.status).to.equal(422);
-            expect(res.body).to.deep.equal({
-              firstName: 'Invalid first name format.',
-              lastName: 'Invalid last name format.',
-            });
-            done();
+        .end((err, res) => {
+          expect(res.status).to.equal(422);
+          expect(res.body).to.deep.equal({
+            firstName: 'Invalid first name format.',
+            lastName: 'Invalid last name format.',
           });
+          done();
+        });
       });
     });
 
     describe('when email is sent', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/users/4')
+          .put('/api/users/3')
           .send({
             email: 'ceva.email@gmail.com',
           })
@@ -307,7 +311,7 @@ describe('CRUD user', () => {
     describe('when an id is sent', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/users/4')
+          .put('/api/users/3')
           .send({
             id: 13,
           })
@@ -322,7 +326,7 @@ describe('CRUD user', () => {
     describe('when a password is sent', () => {
       it('returns 422', done => {
         request(app)
-          .put('/api/users/4')
+          .put('/api/users/3')
           .send({
             password: 'bigfkinoof',
           })
@@ -337,19 +341,21 @@ describe('CRUD user', () => {
     describe('when valid data is sent', () => {
       it('returns the modified user', done => {
         request(app)
-          .put('/api/users/4')
+          .put('/api/users/2')
           .send({
             firstName: 'Salutti My Friend',
             lastName: 'Unsingurcuvant',
             rating: 10,
+            companyId: 1,
           })
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
-              id: 4,
+              id: 2,
               firstName: 'Salutti My Friend',
               lastName: 'Unsingurcuvant',
-              email: 'test.email4@gmail.ro',
+              email: 'test.email3@gmail.ro',
+              companyId: 1,
               rating: 10,
               deletedAt: null,
             });

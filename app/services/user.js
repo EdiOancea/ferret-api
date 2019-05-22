@@ -1,4 +1,5 @@
 const CrudService = require('./crudService');
+const companyService = require('./company');
 const userRepository = require('../repositories/user');
 const error = require('./error');
 

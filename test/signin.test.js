@@ -23,7 +23,7 @@ describe('Sign In', () => {
         .end(async (err, res) => {
           const token = jwt.verify(res.body.token, privateKey);
           expect(res.status).to.equal(200);
-          expect(token.id).to.equal(1);
+          expect(token.id).to.equal(3);
           done();
         });
     });
