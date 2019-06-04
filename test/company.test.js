@@ -24,6 +24,7 @@ describe('CRUD company', () => {
               name: 'TestCompany',
               rating: 0,
               fieldOfActivityId: 1,
+              timetable: 'TestTimetable',
             });
             done();
           });
@@ -63,6 +64,7 @@ describe('CRUD company', () => {
           .send({
             name: 'TestCompanyPatru',
             fieldOfActivityId: 1,
+            timetable: 'TestTimetablePatru',
           })
           .end((err, res) => {
             expect(res.status).to.equal(200);
@@ -71,6 +73,7 @@ describe('CRUD company', () => {
               rating: 0,
               deletedAt: null,
               fieldOfActivityId: 1,
+              timetable: 'TestTimetablePatru',
             });
             done();
           });
@@ -136,11 +139,29 @@ describe('CRUD company', () => {
           .send({
             name: 'Salutti123a',
             fieldOfActivityId: 3,
+            timetable: 'TestTimetablePatru',
           })
           .end((err, res) => {
             expect(res.status).to.equal(422);
             expect(res.body).to.deep.equal({
               name: 'Invalid company name format.',
+            });
+            done();
+          });
+      });
+    });
+
+    describe('when timetable is not included', () => {
+      it('returns 422', done => {
+        request(app)
+          .post('/api/companies')
+          .send({
+            name: 'TestCompanyCinci',
+          })
+          .end((err, res) => {
+            expect(res.status).to.equal(422);
+            expect(res.body).to.deep.equal({
+              message: 'Invalid company format.',
             });
             done();
           });
@@ -160,6 +181,7 @@ describe('CRUD company', () => {
               name: 'TestCompany',
               fieldOfActivityId: 1,
               rating: 0,
+              timetable: 'TestTimetable',
             });
             expect(res.body.deletedAt).to.not.equal(null);
             done();
@@ -272,6 +294,7 @@ describe('CRUD company', () => {
           .put('/api/companies/3')
           .send({
             fieldOfActivityId: 3,
+            timetable: 'TestTimetableTrei',
           })
           .end((err, res) => {
             expect(res.status).to.equal(200);
@@ -281,6 +304,7 @@ describe('CRUD company', () => {
               rating: 0,
               fieldOfActivityId: 3,
               deletedAt: null,
+              timetable: 'TestTimetableTrei',
             });
             done();
           });

@@ -35,6 +35,17 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
+    timetable: {
+      type: DataTypes.STRING,
+      defaultValue: '',
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Invalid timetable format.',
+        },
+      },
+    },
   }, {
     timestamps: true,
     freezeTableName: true,

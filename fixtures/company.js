@@ -4,11 +4,18 @@ const fieldOfActivityFixture = require('./fieldOfActivity');
 module.exports = {
   ...fieldOfActivityFixture,
   companies: [
-    { name: 'TestCompany' },
+    {
+      name: 'TestCompany',
+      timetable: 'TestTimetable'
+    },
     {
       name: 'TestCompanyDoi',
+      timetable: 'TestTimetableDoi',
       deleted_at: new Date(),
     },
-    { name: 'TestCompanyTrei' },
+    {
+      name: 'TestCompanyTrei',
+      timetable: 'TestTimetableTrei'
+    },
   ].map(company => createCompany(company)),
 };
