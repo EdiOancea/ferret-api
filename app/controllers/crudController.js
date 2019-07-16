@@ -4,7 +4,7 @@ module.exports = class Controller {
   }
 
   async create(req, res, next) {
-    res.json(await this.service.create(req.body));
+    res.json(await this.service.create(req.body, req.files));
   }
 
   async delete(req, res, next) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require('multer');
 require('dotenv').config();
 
 const userRouter = require('./app/routes/user');
@@ -12,9 +13,11 @@ const sequelizeErrorParser = require('./app/services/sequelizeErrorParser');
 
 const port = process.env.PORT;
 const app = express();
+const upload = multer({ dest: './tmp' });
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(upload.array('images'));
 
 app.use('/api', addressRouter);
 app.use('/api', userRouter);

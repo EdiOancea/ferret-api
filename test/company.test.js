@@ -1,10 +1,13 @@
 const request = require('supertest');
 const expect = require('chai').expect;
 const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
 
 const app = require('../index');
 const companyFixture = require('../fixtures/company');
 const loadFixture = require('./loadFixture');
+const companyFilesFolder = require('../config.js').companyFilesFolder;
 
 describe('CRUD company', () => {
   before(async () => {
@@ -61,11 +64,11 @@ describe('CRUD company', () => {
       it('returns the company', done => {
         request(app)
           .post('/api/companies')
-          .send({
-            name: 'TestCompanyPatru',
-            fieldOfActivityId: 1,
-            timetable: 'TestTimetablePatru',
-          })
+          .attach('images', `${__dirname}/mock-image1.jpg`)
+          .attach('images', `${__dirname}/mock-image2.jpeg`)
+          .field('name', 'TestCompanyPatru')
+          .field('fieldOfActivityId', 1)
+          .field('timetable', 'TestTimetablePatru')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt', 'id'])).to.deep.equal({
@@ -75,6 +78,10 @@ describe('CRUD company', () => {
               fieldOfActivityId: 1,
               timetable: 'TestTimetablePatru',
             });
+            setTimeout(() => {
+              expect(fs.existsSync(path.join(companyFilesFolder, 'mock-image1.jpg'))).to.equal(true);
+              expect(fs.existsSync(path.join(companyFilesFolder, 'mock-image2.jpeg'))).to.equal(true);
+            }, 100);
             done();
           });
       });

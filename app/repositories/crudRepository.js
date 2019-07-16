@@ -12,6 +12,14 @@ module.exports = class Repository {
     });
   }
 
+  getAllByPropsNonParanoid(props) {
+    return db[this.modelName].findAll({
+      where: { ...props },
+      paranoid: false,
+      raw: true,
+    });
+  }
+
   get(id) {
     return db[this.modelName].findOne({ where: { id } });
   }

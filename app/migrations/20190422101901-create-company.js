@@ -24,10 +24,6 @@ module.exports = {
         field: 'rating',
         type: Sequelize.DOUBLE,
       },
-      timetable: {
-        field: 'timetable',
-        type: Sequelize.STRING,
-      },
       created_at: {
         type: Sequelize.DATE,
       },
