@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 
-module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.bulkInsert('users', [
+const users = [
   {
     id: 1,
     first_name: 'Test First Name',
@@ -35,18 +34,30 @@ module.exports = {
     created_at: new Date(),
     updated_at: new Date(),
   },
-  ].forEach(async user => {
-    user.password = await hashPassword(user.password);
-  }), {
-    validate: true,
-    individualHooks: true,
-  }),
+];
 
-  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('users', null, {}),
-};
+const usersToAdd = [];
+for (const user of users) {
+  const password = bcrypt.hashSync(user.password, 10);
+  usersToAdd.push({
+    ...user,
+    password,
+  });
+}
 
-const hashPassword = async (password) => {
-  saltRounds = 10;
+module.exports = {
+  up: (queryInterface, Sequelize) => queryInterface.bulkInsert(
+    'users',
+    usersToAdd,
+    {
+      validate: true,
+      individualHooks: true,
+    }
+  ),
 
-  return await bcrypt.hash(password, saltRounds);
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete(
+    'users',
+    null,
+    {}
+  ),
 };
