@@ -1,13 +1,14 @@
 const path = require('path');
 
-const companyRepository = require('../repositories/company');
+const companyFilesFolder = require('../../config.js').companyFilesFolder;
 const addressRepository = require('../repositories/address');
 const fileRepository = require('../repositories/file');
 const fieldOfActivityService = require('./fieldOfActivity');
+const timetableService = require('./timetable');
 const fileService = require('./file');
-const error = require('../services/error');
+
+const error = require('./error');
 const CrudService = require('./crudService');
-const companyFilesFolder = require('../../config.js').companyFilesFolder;
 
 class CompanyService extends CrudService {
   async create(company, files) {
@@ -15,7 +16,7 @@ class CompanyService extends CrudService {
       error.throwValidationError('Invalid company format.');
     }
 
-    const companyExists = await companyRepository.getByPropsNonParanoid({ name: company.name });
+    const companyExists = await this.repository.getByPropsNonParanoid({ name: company.name });
     if (companyExists) {
       error.throwValidationError('Company already exists.');
     }
@@ -26,7 +27,17 @@ class CompanyService extends CrudService {
       error.throwValidationError('Invalid company format.');
     }
 
-    const createdCompany = await companyRepository.create(company);
+    const { timetables, ...newCompany } = company;
+    const createdCompany = await this.repository.create(newCompany);
+
+    for (const timetable of timetables) {
+      await timetableService.create({
+        ...timetable,
+        start: new Date(timetable.start),
+        end: new Date(timetable.end),
+        companyId: createdCompany.id,
+      });
+    }
 
     for (const image of files) {
       await fileService.create({
@@ -55,7 +66,7 @@ class CompanyService extends CrudService {
     }
 
     await this.get(id);
-    await companyRepository.update(id, newData);
+    await this.repository.update(id, newData);
 
     return await this.get(id);
   }

@@ -39,9 +39,22 @@ const createCompany = company => ({
   ...company,
 });
 
+const createTimetable = timetable => ({
+  day: 'Monday',
+  start: new Date(),
+  end: new Date(),
+  company_id: 'companies:0',
+  deleted_at: null,
+  created_at: new Date(),
+  updated_at: new Date(),
+  ...timetable,
+});
+
+
 module.exports = {
   createUser,
   createAddress,
   createFieldOfActivity,
   createCompany,
+  createTimetable,
 };

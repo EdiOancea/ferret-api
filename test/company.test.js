@@ -6,12 +6,14 @@ const path = require('path');
 
 const app = require('../index');
 const companyFixture = require('../fixtures/company');
+const timetableFixture = require('../fixtures/timetable');
 const loadFixture = require('./loadFixture');
 const companyFilesFolder = require('../config.js').companyFilesFolder;
 
 describe('CRUD company', () => {
   before(async () => {
     await loadFixture(companyFixture);
+    await loadFixture(timetableFixture);
   });
 
   describe('get company', () => {
@@ -62,6 +64,18 @@ describe('CRUD company', () => {
   describe('post company', () => {
     describe('when a valid company is posted', () => {
       it('returns the company', done => {
+        const timetables = [
+          {
+            day: 'Tuesday',
+            start: new Date('March 17, 2019 08:01:00'),
+            end: new Date('March 17, 2019 09:00:00'),
+          },
+          {
+            day: 'Tuesday',
+            start: new Date('March 17, 2019 09:01:00'),
+            end: new Date('March 17, 2019 10:00:00'),
+          },
+        ];
         request(app)
           .post('/api/companies')
           .attach('images', `${__dirname}/mock-image1.jpg`)
@@ -69,6 +83,12 @@ describe('CRUD company', () => {
           .field('name', 'TestCompanyPatru')
           .field('fieldOfActivityId', 1)
           .field('timetable', 'TestTimetablePatru')
+          .field('timetables[0][day]', timetables[0].day)
+          .field('timetables[0][start]', String(timetables[0].start))
+          .field('timetables[0][end]', String(timetables[0].end))
+          .field('timetables[1][day]', timetables[1].day)
+          .field('timetables[1][start]', String(timetables[1].start))
+          .field('timetables[1][end]', String(timetables[1].end))
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt', 'id'])).to.deep.equal({

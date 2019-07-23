@@ -66,6 +66,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'companyId',
       onDelete: 'CASCADE',
     });
+    Company.hasMany(models.timetables, {
+      foreignKey: 'companyId',
+      onDelete: 'SET NULL',
+    });
   };
 
   return Company;
