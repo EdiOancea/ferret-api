@@ -81,7 +81,7 @@ describe('CRUD company', () => {
           .attach('images', `${__dirname}/mock-image1.jpg`)
           .attach('images', `${__dirname}/mock-image2.jpeg`)
           .field('name', 'TestCompanyPatru')
-          .field('fieldOfActivityId', 1)
+          .field('business', 'FieldOfActivity')
           .field('timetable', 'TestTimetablePatru')
           .field('timetables[0][day]', timetables[0].day)
           .field('timetables[0][start]', String(timetables[0].start))
@@ -124,7 +124,7 @@ describe('CRUD company', () => {
       });
     });
 
-    describe('when field of activity id is not included', () => {
+    describe('when business name is not included', () => {
       it('returns 422', done => {
         request(app)
           .post('/api/companies')
@@ -141,13 +141,13 @@ describe('CRUD company', () => {
       });
     });
 
-    describe('when field of activity id is not valid', () => {
+    describe('when business name is not valid', () => {
       it('returns 404', done => {
         request(app)
           .post('/api/companies')
           .send({
             name: 'TestCompanyCinci',
-            fieldOfActivityId: 20,
+            business: 'FieldOfActivityThatDoesntExist',
           })
           .end((err, res) => {
             expect(res.status).to.equal(404);
@@ -165,7 +165,7 @@ describe('CRUD company', () => {
           .post('/api/companies')
           .send({
             name: 'Salutti123a',
-            fieldOfActivityId: 3,
+            business: 'FieldOfActivityTrei',
             timetable: 'TestTimetablePatru',
           })
           .end((err, res) => {
@@ -305,7 +305,7 @@ describe('CRUD company', () => {
         request(app)
           .put('/api/companies/3')
           .send({
-            fieldOfActivityId: 20,
+            business: 'FieldOfActivityThatDoesntExist',
           })
           .end((err, res) => {
             expect(res.status).to.equal(404);
@@ -320,7 +320,7 @@ describe('CRUD company', () => {
         request(app)
           .put('/api/companies/3')
           .send({
-            fieldOfActivityId: 3,
+            business: 'FieldOfActivityTrei',
             timetable: 'TestTimetableTrei',
           })
           .end((err, res) => {

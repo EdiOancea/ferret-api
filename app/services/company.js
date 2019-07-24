@@ -2,8 +2,8 @@ const path = require('path');
 
 const companyFilesFolder = require('../../config.js').companyFilesFolder;
 const addressRepository = require('../repositories/address');
+const fieldOfActivityRepository = require('../repositories/fieldOfActivity');
 const fileRepository = require('../repositories/file');
-const fieldOfActivityService = require('./fieldOfActivity');
 const timetableService = require('./timetable');
 const fileService = require('./file');
 
@@ -21,13 +21,21 @@ class CompanyService extends CrudService {
       error.throwValidationError('Company already exists.');
     }
 
-    if (company.fieldOfActivityId !== undefined) {
-      const fieldExists = await fieldOfActivityService.get(company.fieldOfActivityId);
+    const {
+      business,
+      timetables,
+      ...newCompany
+    } = company;
+    if (business !== undefined) {
+      const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({ name: business });
+      if (!fieldOfActivity) {
+        error.throwNotFoundError('Field of activity not found.');
+      }
+      newCompany.fieldOfActivityId = fieldOfActivity.id;
     } else {
       error.throwValidationError('Invalid company format.');
     }
 
-    const { timetables, ...newCompany } = company;
     const createdCompany = await this.repository.create(newCompany);
 
     for (const timetable of timetables) {
@@ -52,17 +60,22 @@ class CompanyService extends CrudService {
     return await this.get(createdCompany.id);
   }
 
-  async update(id, newData) {
-    if (newData.id !== undefined) {
+  async update(id, data) {
+    if (data.id !== undefined) {
       error.throwValidationError('You can not change the id.');
     }
 
-    if (newData.name !== undefined) {
+    if (data.name !== undefined) {
       error.throwValidationError('You can not change the company name.');
     }
 
-    if (newData.fieldOfActivityId !== undefined) {
-      const fieldExists = await fieldOfActivityService.get(newData.fieldOfActivityId);
+    const { business, ...newData } = data;
+    if (business !== undefined) {
+      const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({ name: business });
+      if (!fieldOfActivity) {
+        error.throwNotFoundError('Field of activity not found.');
+      }
+      newData.fieldOfActivityId = fieldOfActivity.id;
     }
 
     await this.get(id);
