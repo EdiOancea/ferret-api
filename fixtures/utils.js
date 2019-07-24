@@ -39,6 +39,17 @@ const createCompany = company => ({
   ...company,
 });
 
+const createAppointment = appointment => ({
+  start_time: new Date(),
+  end_time: new Date(),
+  status: 'pending',
+  company_id: 'companies:0',
+  deleted_at: null,
+  created_at: new Date(),
+  updated_at: new Date(),
+  ...appointment,
+});
+
 const createTimetable = timetable => ({
   day: 'Monday',
   start: new Date(),
@@ -50,11 +61,11 @@ const createTimetable = timetable => ({
   ...timetable,
 });
 
-
 module.exports = {
   createUser,
   createAddress,
   createFieldOfActivity,
   createCompany,
+  createAppointment,
   createTimetable,
 };

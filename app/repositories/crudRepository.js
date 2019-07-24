@@ -12,6 +12,13 @@ module.exports = class Repository {
     });
   }
 
+  getAllByProps(props) {
+    return db[this.modelName].findAll({
+      where: { ...props },
+      raw: true,
+    });
+  }
+
   getAllByPropsNonParanoid(props) {
     return db[this.modelName].findAll({
       where: { ...props },
