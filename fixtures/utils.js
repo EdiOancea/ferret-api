@@ -39,6 +39,16 @@ const createCompany = company => ({
   ...company,
 });
 
+const createCompanyReview = companyReview => ({
+  comment: 'Test Comment',
+  rating: 1,
+  company_id: 'companies:0',
+  user_id: 'users:1',
+  deleted_at: null,
+  created_at: new Date(),
+  updated_at: new Date(),
+  ...companyReview,
+});
 const createAppointment = appointment => ({
   start_time: new Date(),
   end_time: new Date(),
@@ -66,6 +76,7 @@ module.exports = {
   createAddress,
   createFieldOfActivity,
   createCompany,
+  createCompanyReview,
   createAppointment,
   createTimetable,
 };

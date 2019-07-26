@@ -14,7 +14,6 @@ class FileService extends CrudService {
     }
 
     const { localname, ...newFile } = file;
-
     const createdFile = await fileRepository.create(newFile);
 
     const renameAsync = promisify(fs.rename);

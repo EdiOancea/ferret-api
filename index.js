@@ -9,8 +9,10 @@ const addressRouter = require('./app/routes/address');
 const signinRouter = require('./app/routes/signin');
 const fieldOfActivityRouter = require('./app/routes/fieldOfActivity');
 const companyRouter = require('./app/routes/company');
+const companyReviewRouter = require('./app/routes/companyReview');
 const appointmentRouter = require('./app/routes/appointment');
 const sequelizeErrorParser = require('./app/services/sequelizeErrorParser');
+const searchAuthenticatedUser = require('./middlewares/searchAuthenticatedUser');
 
 const port = process.env.PORT;
 const app = express();
@@ -25,6 +27,7 @@ app.use('/api', userRouter);
 app.use('/api', fieldOfActivityRouter);
 app.use('/api', companyRouter);
 app.use('/api', signinRouter);
+app.use('/api', searchAuthenticatedUser, companyReviewRouter);
 app.use('/api', appointmentRouter);
 
 app.use((err, req, res, next) => {

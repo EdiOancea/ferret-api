@@ -46,7 +46,6 @@ class CompanyService extends CrudService {
         companyId: createdCompany.id,
       });
     }
-
     for (const image of files) {
       await fileService.create({
         originalFileName: image.originalname,
