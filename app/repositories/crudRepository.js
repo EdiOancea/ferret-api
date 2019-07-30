@@ -31,6 +31,10 @@ module.exports = class Repository {
     return db[this.modelName].findOne({ where: { id } });
   }
 
+  getAll() {
+    return db[this.modelName].findAll({ raw: true });
+  }
+
   getNonParanoid(id) {
     return db[this.modelName].findOne({
       where: { id },

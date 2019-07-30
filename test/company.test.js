@@ -59,6 +59,37 @@ describe('CRUD company', () => {
           });
       });
     });
+
+    describe('when all existing companies are fetched', () => {
+      it('returns the companies', done => {
+        request(app)
+          .get('/api/companies/')
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            const actualCompanies = res.body.map(company =>
+              _.omit(company, ['createdAt', 'updatedAt', 'deletedAt'])
+            );
+            const expectedCompanies = [
+              {
+                id: 1,
+                name: 'TestCompany',
+                fieldOfActivityId: 1,
+                rating: 0,
+                timetable: 'TestTimetable',
+              },
+              {
+                id: 3,
+                name: 'TestCompanyTrei',
+                fieldOfActivityId: 1,
+                rating: 0,
+                timetable: 'TestTimetableTrei',
+              },
+            ];
+            expect(actualCompanies).to.deep.equal(expectedCompanies);
+            done();
+          });
+      });
+    });
   });
 
   describe('post company', () => {

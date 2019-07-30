@@ -18,4 +18,8 @@ module.exports = class Controller {
   async get(req, res, next) {
     res.json(await this.service.get(req.params.id));
   }
+
+  async getAll(req, res, next) {
+    res.json(await this.service.getAll());
+  }
 };

@@ -22,4 +22,8 @@ module.exports = class CrudService {
 
     return deleted;
   }
+
+  async getAll() {
+    return await this.repository.getAll();
+  }
 };
