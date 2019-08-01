@@ -1,4 +1,5 @@
-const tmpFolder = `${__dirname}/tmp`;
-const companyFilesFolder = `${__dirname}/files/companies`;
+const TMP_FOLDER = `${__dirname}/tmp`;
+const COMPANY_FILES_FOLDER = `${__dirname}/files/companies`;
+const ORIGIN = 'http://localhost:3001/';
 
-module.exports = { tmpFolder, companyFilesFolder };
+module.exports = { TMP_FOLDER, COMPANY_FILES_FOLDER, ORIGIN };

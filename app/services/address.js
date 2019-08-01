@@ -1,32 +1,35 @@
+const addressValidator = require('../validators/address');
 const CrudService = require('./CrudService');
-const companyService = require('./company');
-const addressRepository = require('../repositories/address');
 const error = require('./error');
 
 class AddressService extends CrudService {
-  async create(address) {
-    if (address.id || address.companyId === undefined) {
-      error.throwValidationError('Invalid address format.');
-    }
+  async parseAndCreate(companyId, address) {
+    const addressFields = address.split(', ');
+    const [ streetName, streetNumber ] = addressFields[0].split(' ');
+    const apartmentNumber = addressFields[1].split(' ')[1];
+    const city = addressFields[2];
+    const country = addressFields[3];
 
-    const addressExists = await addressRepository.getByPropsNonParanoid(address);
-    if (addressExists) {
-      error.throwValidationError('Address already exists.');
-    }
-
-    await companyService.get(address.companyId);
-    const createdAddress = await addressRepository.create(address);
-
-    return await this.get(createdAddress.id);
+    await this.create({
+      streetNumber: Number(streetNumber),
+      apartmentNumber: Number(apartmentNumber),
+      companyId,
+      streetName,
+      city,
+      country,
+    });
   }
 
-  async update(id, newData) {
-    if (newData.id !== undefined) {
-      error.throwValidationError('You can not change the id.');
-    }
+  async create(address) {
+    await addressValidator.validateCreate(address);
+    const createdAddress = await this.repository.create(address);
 
-    await this.get(id);
-    await addressRepository.update(id, newData);
+    return createdAddress;
+  }
+
+  async update(id, data) {
+    await addressValidator.validateUpdate(id, data);
+    await this.repository.update(id, data);
 
     return await this.get(id);
   }

@@ -1,55 +1,82 @@
 const path = require('path');
 
-const companyFilesFolder = require('../../config.js').companyFilesFolder;
 const addressRepository = require('../repositories/address');
 const fieldOfActivityRepository = require('../repositories/fieldOfActivity');
 const fileRepository = require('../repositories/file');
+const companyValidator = require('../validators/company');
+const addressService = require('../services/address');
 const timetableService = require('./timetable');
 const fileService = require('./file');
 
 const error = require('./error');
 const CrudService = require('./crudService');
+const { COMPANY_FILES_FOLDER, ORIGIN } = require('../../config.js');
 
 class CompanyService extends CrudService {
-  async create(company, files) {
-    if (company.id !== undefined) {
-      error.throwValidationError('Invalid company format.');
+  async get(id) {
+    const company = await this.repository.get(id);
+    if (!company) {
+      error.throwNotFoundError('Company not found.');
     }
 
-    const companyExists = await this.repository.getByPropsNonParanoid({ name: company.name });
-    if (companyExists) {
-      error.throwValidationError('Company already exists.');
+    const { fieldOfActivityId, ...companyToReturn } = company;
+    const fieldOfActivity = await fieldOfActivityRepository
+      .get(fieldOfActivityId);
+    companyToReturn.business = fieldOfActivity.name;
+
+    const companyAddresses = await addressRepository.getAllByProps({
+      companyId: id,
+    });
+    if (companyAddresses && companyAddresses.length) {
+      companyToReturn.address = companyAddresses[0];
     }
+
+    const companyFiles = await fileRepository.getAllByProps({
+      entityId: id,
+      entityType: 'company',
+    });
+    companyToReturn.images = companyFiles.map(file => ({
+      name: file.originalFileName,
+      url: `${ORIGIN}companies/${file.originalFileName}`,
+    }));
+
+    return companyToReturn;
+  }
+
+  async create(company, files) {
+    await companyValidator.validateCreate(company);
 
     const {
       business,
+      address,
       timetables,
       ...newCompany
     } = company;
-    if (business !== undefined) {
-      const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({ name: business });
-      if (!fieldOfActivity) {
-        error.throwNotFoundError('Field of activity not found.');
-      }
-      newCompany.fieldOfActivityId = fieldOfActivity.id;
-    } else {
-      error.throwValidationError('Invalid company format.');
-    }
+    const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({
+      name: business,
+    });
+    newCompany.fieldOfActivityId = fieldOfActivity.id;
 
     const createdCompany = await this.repository.create(newCompany);
 
-    for (const timetable of timetables) {
-      await timetableService.create({
-        ...timetable,
-        start: new Date(timetable.start),
-        end: new Date(timetable.end),
-        companyId: createdCompany.id,
-      });
+    if (address) {
+      await addressService.parseAndCreate(createdCompany.id, String(address));
+    }
+
+    if (timetables) {
+      for (const timetable of timetables) {
+        await timetableService.create({
+          ...timetable,
+          start: new Date(timetable.start),
+          end: new Date(timetable.end),
+          companyId: createdCompany.id,
+        });
+      }
     }
     for (const image of files) {
       await fileService.create({
         originalFileName: image.originalname,
-        path: path.join(companyFilesFolder, image.originalname),
+        path: path.join(COMPANY_FILES_FOLDER, image.originalname),
         entityType: 'company',
         entityId: createdCompany.id,
         localname: image.filename,
@@ -60,35 +87,34 @@ class CompanyService extends CrudService {
   }
 
   async update(id, data) {
-    if (data.id !== undefined) {
-      error.throwValidationError('You can not change the id.');
-    }
-
-    if (data.name !== undefined) {
-      error.throwValidationError('You can not change the company name.');
-    }
+    await companyValidator.validateUpdate(id, data);
 
     const { business, ...newData } = data;
     if (business !== undefined) {
-      const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({ name: business });
-      if (!fieldOfActivity) {
-        error.throwNotFoundError('Field of activity not found.');
-      }
+      const fieldOfActivity = await fieldOfActivityRepository.getByPropsNonParanoid({
+        name: business,
+      });
       newData.fieldOfActivityId = fieldOfActivity.id;
     }
 
-    await this.get(id);
     await this.repository.update(id, newData);
 
     return await this.get(id);
   }
 
   async delete(id) {
-    await this.get(id);
+    await companyValidator.validateDelete(id);
+
     await this.repository.delete(id);
     const deleted = await this.repository.getNonParanoid(id);
-    const files = await fileRepository.getAllByPropsNonParanoid( { entityId: deleted.id });
 
+    await addressRepository.deleteByProps({
+      companyId: deleted.id,
+    });
+
+    const files = await fileRepository.getAllByProps({
+      entityId: deleted.id,
+    });
     for (const image of files) {
       await fileService.delete(image.id);
     }

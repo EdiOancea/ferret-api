@@ -28,7 +28,10 @@ module.exports = class Repository {
   }
 
   get(id) {
-    return db[this.modelName].findOne({ where: { id } });
+    return db[this.modelName].findOne({
+      where: { id },
+      raw: true,
+    });
   }
 
   getAll() {
@@ -48,6 +51,10 @@ module.exports = class Repository {
 
   delete(id) {
     return db[this.modelName].destroy({ where: { id } });
+  }
+
+  deleteByProps(props) {
+    return db[this.modelName].destroy({ where: { ...props } });
   }
 
   update(id, newObjectData) {

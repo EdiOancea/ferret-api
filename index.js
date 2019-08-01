@@ -18,6 +18,7 @@ const port = process.env.PORT;
 const app = express();
 const upload = multer({ dest: './tmp' });
 
+app.use(express.static('files'));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(upload.array('images'));

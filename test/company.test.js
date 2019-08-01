@@ -6,14 +6,12 @@ const path = require('path');
 
 const app = require('../index');
 const companyFixture = require('../fixtures/company');
-const timetableFixture = require('../fixtures/timetable');
 const loadFixture = require('./loadFixture');
-const companyFilesFolder = require('../config.js').companyFilesFolder;
+const { COMPANY_FILES_FOLDER } = require('../config.js');
 
 describe('CRUD company', () => {
   before(async () => {
     await loadFixture(companyFixture);
-    await loadFixture(timetableFixture);
   });
 
   describe('get company', () => {
@@ -25,11 +23,12 @@ describe('CRUD company', () => {
             expect(res.status).to.equal(200);
             expect(_.omit(res.body, ['createdAt', 'updatedAt'])).to.deep.equal({
               id: 1,
-              deletedAt: null,
+              business: 'FieldOfActivity',
               name: 'TestCompany',
               rating: 0,
-              fieldOfActivityId: 1,
               timetable: 'TestTimetable',
+              images: [],
+              deletedAt: null,
             });
             done();
           });
@@ -114,6 +113,7 @@ describe('CRUD company', () => {
           .field('name', 'TestCompanyPatru')
           .field('business', 'FieldOfActivity')
           .field('timetable', 'TestTimetablePatru')
+          .field('address', 'Iugoslaviei 25, ap. 13, Cluj-Napoca, Romania')
           .field('timetables[0][day]', timetables[0].day)
           .field('timetables[0][start]', String(timetables[0].start))
           .field('timetables[0][end]', String(timetables[0].end))
@@ -122,16 +122,39 @@ describe('CRUD company', () => {
           .field('timetables[1][end]', String(timetables[1].end))
           .end((err, res) => {
             expect(res.status).to.equal(200);
-            expect(_.omit(res.body, ['createdAt', 'updatedAt', 'id'])).to.deep.equal({
+            const responseBody = _.omit(res.body, ['createdAt', 'updatedAt']);
+            responseBody.address = _.omit(res.body.address, ['createdAt', 'updatedAt']);
+            expect(responseBody).to.deep.equal({
+              id: 4,
               name: 'TestCompanyPatru',
               rating: 0,
               deletedAt: null,
-              fieldOfActivityId: 1,
+              business: 'FieldOfActivity',
+              address: {
+                id: 1,
+                apartmentNumber: 13,
+                city: 'Cluj-Napoca',
+                country: 'Romania',
+                streetName: 'Iugoslaviei',
+                streetNumber: 25,
+                companyId: 4,
+                deletedAt: null,
+              },
               timetable: 'TestTimetablePatru',
+              images: [
+                {
+                  name: 'mock-image1.jpg',
+                  url: 'http://localhost:3001/companies/mock-image1.jpg',
+                },
+                {
+                  name: 'mock-image2.jpeg',
+                  url: 'http://localhost:3001/companies/mock-image2.jpeg',
+                }
+              ],
             });
             setTimeout(() => {
-              expect(fs.existsSync(path.join(companyFilesFolder, 'mock-image1.jpg'))).to.equal(true);
-              expect(fs.existsSync(path.join(companyFilesFolder, 'mock-image2.jpeg'))).to.equal(true);
+              expect(fs.existsSync(path.join(COMPANY_FILES_FOLDER, 'mock-image1.jpg'))).to.equal(true);
+              expect(fs.existsSync(path.join(COMPANY_FILES_FOLDER, 'mock-image2.jpeg'))).to.equal(true);
             }, 100);
             done();
           });
@@ -172,7 +195,7 @@ describe('CRUD company', () => {
       });
     });
 
-    describe('when business name is not valid', () => {
+    describe('when field of activity does not exist', () => {
       it('returns 404', done => {
         request(app)
           .post('/api/companies')
@@ -331,7 +354,7 @@ describe('CRUD company', () => {
       });
     });
 
-    describe('when an invalid field id is sent', () => {
+    describe('when field of activity does not exist', () => {
       it('returns 422', done => {
         request(app)
           .put('/api/companies/3')
@@ -360,9 +383,10 @@ describe('CRUD company', () => {
               id: 3,
               name: 'TestCompanyTrei',
               rating: 0,
-              fieldOfActivityId: 3,
+              business: 'FieldOfActivityTrei',
               deletedAt: null,
               timetable: 'TestTimetableTrei',
+              images: [],
             });
             done();
           });

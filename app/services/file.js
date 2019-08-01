@@ -5,7 +5,7 @@ const path = require('path');
 const CrudService = require('./CrudService');
 const fileRepository = require('../repositories/file');
 const error = require('./error');
-const tmpFolder = require('../../config.js').tmpFolder;
+const { TMP_FOLDER } = require('../../config.js');
 
 class FileService extends CrudService {
   async create(file) {
@@ -17,7 +17,7 @@ class FileService extends CrudService {
     const createdFile = await fileRepository.create(newFile);
 
     const renameAsync = promisify(fs.rename);
-    await renameAsync(path.join(tmpFolder, localname), createdFile.path);
+    await renameAsync(path.join(TMP_FOLDER, localname), createdFile.path);
 
     return await this.get(createdFile.id);
   }
