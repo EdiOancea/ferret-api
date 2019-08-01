@@ -13,6 +13,7 @@ const companyReviewRouter = require('./app/routes/companyReview');
 const appointmentRouter = require('./app/routes/appointment');
 const sequelizeErrorParser = require('./app/services/sequelizeErrorParser');
 const searchAuthenticatedUser = require('./middlewares/searchAuthenticatedUser');
+const getAuthenticatedUser = require('./middlewares/getAuthenticatedUser');
 
 const port = process.env.PORT;
 const app = express();
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(upload.array('images'));
 
+app.get('/api/logged-user', searchAuthenticatedUser, getAuthenticatedUser)
 app.use('/api', addressRouter);
 app.use('/api', userRouter);
 app.use('/api', fieldOfActivityRouter);
