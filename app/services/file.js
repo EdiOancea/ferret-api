@@ -3,39 +3,30 @@ const { promisify } = require('util');
 const path = require('path');
 
 const CrudService = require('./CrudService');
-const fileRepository = require('../repositories/file');
-const error = require('./error');
 const { TMP_FOLDER } = require('../../config.js');
 
 class FileService extends CrudService {
   async create(file) {
-    if (!file.path || file.id) {
-      error.throwValidationError('Invalid file format.');
-    }
+    await this.validator.validateCreate(file);
 
     const { localname, ...newFile } = file;
-    const createdFile = await fileRepository.create(newFile);
+    const createdFile = await this.repository.create(newFile);
 
     const renameAsync = promisify(fs.rename);
     await renameAsync(path.join(TMP_FOLDER, localname), createdFile.path);
 
-    return await this.get(createdFile.id);
+    return createdFile;
   }
 
-  async update(id, newData) {
-    const { originalFileName, ...restData } = newData;
-    if (restData !== undefined) {
-      error.throwValidationError('You can only change the original file name.');
-    }
-
-    await this.get(id);
-    await fileRepository.update(id, newData);
+  async update(id, data) {
+    await this.validator.validateUpdate(id, data);
+    await this.repository.update(id, data);
 
     return await this.get(id);
   }
 
   async delete(id) {
-    await this.get(id);
+    await this.validator.validateDelete(id);
     await this.repository.delete(id);
 
     const deleted = await this.repository.getNonParanoid(id);
@@ -48,4 +39,5 @@ class FileService extends CrudService {
 module.exports = new FileService({
   repositoryName: 'file',
   modelName: 'File',
+  validatorName: 'file',
 });

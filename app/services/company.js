@@ -3,7 +3,6 @@ const path = require('path');
 const addressRepository = require('../repositories/address');
 const fieldOfActivityRepository = require('../repositories/fieldOfActivity');
 const fileRepository = require('../repositories/file');
-const companyValidator = require('../validators/company');
 const addressService = require('../services/address');
 const timetableService = require('./timetable');
 const fileService = require('./file');
@@ -44,7 +43,7 @@ class CompanyService extends CrudService {
   }
 
   async create(company, files) {
-    await companyValidator.validateCreate(company);
+    await this.validator.validateCreate(company);
 
     const {
       business,
@@ -73,6 +72,7 @@ class CompanyService extends CrudService {
         });
       }
     }
+
     for (const image of files) {
       await fileService.create({
         originalFileName: image.originalname,
@@ -87,7 +87,7 @@ class CompanyService extends CrudService {
   }
 
   async update(id, data) {
-    await companyValidator.validateUpdate(id, data);
+    await this.validator.validateUpdate(id, data);
 
     const { business, ...newData } = data;
     if (business !== undefined) {
@@ -103,7 +103,7 @@ class CompanyService extends CrudService {
   }
 
   async delete(id) {
-    await companyValidator.validateDelete(id);
+    await this.validator.validateDelete(id);
 
     await this.repository.delete(id);
     const deleted = await this.repository.getNonParanoid(id);
@@ -121,9 +121,10 @@ class CompanyService extends CrudService {
 
     return deleted;
   }
-};
+}
 
 module.exports = new CompanyService({
   modelName: 'Company',
   repositoryName: 'company',
+  validatorName: 'company',
 });

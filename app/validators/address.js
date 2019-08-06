@@ -1,14 +1,14 @@
 const companyRepository = require('../repositories/company');
-const addressRepository = require('../repositories/address');
 const error = require('../services/error');
+const CrudValidator = require('./CrudValidator');
 
-class AddressValidator {
+class AddressValidator extends CrudValidator {
   async validateCreate(address) {
     if (address.id || address.companyId === undefined) {
       error.throwValidationError('Invalid address format.');
     }
 
-    const existingAddress = await addressRepository.getByPropsNonParanoid(address);
+    const existingAddress = await this.repository.getByPropsNonParanoid(address);
     if (existingAddress) {
       error.throwValidationError('Address already exists.');
     }
@@ -21,7 +21,7 @@ class AddressValidator {
       error.throwValidationError('You can not change the id.');
     }
 
-    const existingAddress = await addressRepository.get(id);
+    const existingAddress = await this.repository.get(id);
     if (!existingAddress) {
       error.throwNotFoundError('Address not found.');
     }
@@ -41,6 +41,9 @@ class AddressValidator {
       }
     }
   }
-};
+}
 
-module.exports = new AddressValidator();
+module.exports = new AddressValidator({
+  repositoryName: 'address',
+  modelName: 'Address',
+});

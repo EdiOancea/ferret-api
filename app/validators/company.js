@@ -1,14 +1,14 @@
 const fieldOfActivityRepository = require('../repositories/fieldOfActivity');
-const companyRepository = require('../repositories/company');
 const error = require('../services/error');
+const CrudValidator = require('./CrudValidator');
 
-class CompanyValidator {
+class CompanyValidator extends CrudValidator {
   async validateCreate(company) {
     if (company.id !== undefined) {
       error.throwValidationError('Invalid company format.');
     }
 
-    const existingCompany = await companyRepository.getByPropsNonParanoid({
+    const existingCompany = await this.repository.getByPropsNonParanoid({
       name: company.name,
     });
     if (existingCompany) {
@@ -27,19 +27,12 @@ class CompanyValidator {
       error.throwValidationError('You can not change the company name.');
     }
 
-    const existingCompany = await companyRepository.get(id);
+    const existingCompany = await this.repository.get(id);
     if (!existingCompany) {
       error.throwNotFoundError('Company not found.');
     }
 
     await this.validateFieldOfActivity(data, 'update');
-  }
-
-  async validateDelete(id) {
-    const existingCompany = await companyRepository.get(id);
-    if (!existingCompany) {
-      error.throwNotFoundError('Company not found.');
-    }
   }
 
   async validateFieldOfActivity(company, operation) {
@@ -58,4 +51,7 @@ class CompanyValidator {
   }
 };
 
-module.exports = new CompanyValidator();
+module.exports = new CompanyValidator({
+  repositoryName: 'company',
+  modelName: 'Company',
+});

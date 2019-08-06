@@ -40,7 +40,7 @@ describe('CRUD company review', () => {
           .set('Authorization', `Bearer ${token.userIdOfThree}`)
           .end((err, res) => {
             expect(res.status).to.equal(404);
-            expect(res.body).to.deep.equal({ message: 'Company review not found.' });
+            expect(res.body).to.deep.equal({ message: 'CompanyReview not found.' });
             done();
           });
       });

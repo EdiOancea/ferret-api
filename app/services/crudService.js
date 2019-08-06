@@ -4,10 +4,11 @@ module.exports = class CrudService {
   constructor(props) {
     this.modelName = props.modelName;
     this.repository = require(`../repositories/${props.repositoryName}`);
+    this.validator = require(`../validators/${props.validatorName}`);
   }
 
   async get(id) {
-    let found = await this.repository.get(id);
+    const found = await this.repository.get(id);
     if (!found) {
       error.throwNotFoundError(`${this.modelName} not found.`);
     }
@@ -16,7 +17,7 @@ module.exports = class CrudService {
   }
 
   async delete(id) {
-    await this.get(id);
+    await this.validator.validateDelete(id);
     await this.repository.delete(id);
     const deleted = await this.repository.getNonParanoid(id);
 

@@ -1,6 +1,4 @@
-const addressValidator = require('../validators/address');
 const CrudService = require('./CrudService');
-const error = require('./error');
 
 class AddressService extends CrudService {
   async parseAndCreate(companyId, address) {
@@ -21,14 +19,14 @@ class AddressService extends CrudService {
   }
 
   async create(address) {
-    await addressValidator.validateCreate(address);
+    await this.validator.validateCreate(address);
     const createdAddress = await this.repository.create(address);
 
     return createdAddress;
   }
 
   async update(id, data) {
-    await addressValidator.validateUpdate(id, data);
+    await this.validator.validateUpdate(id, data);
     await this.repository.update(id, data);
 
     return await this.get(id);
@@ -38,4 +36,5 @@ class AddressService extends CrudService {
 module.exports = new AddressService({
   repositoryName: 'address',
   modelName: 'Address',
+  validatorName: 'address',
 });

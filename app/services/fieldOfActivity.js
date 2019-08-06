@@ -1,30 +1,16 @@
 const CrudService = require('./CrudService');
-const fieldOfActivityRepository = require('../repositories/fieldOfActivity');
-const error = require('./error');
 
 class FieldOfActivityService extends CrudService {
   async create(fieldOfActivity) {
-    if (!fieldOfActivity.name || fieldOfActivity.id) {
-      error.throwValidationError('Invalid field of activity format.');
-    }
+    await this.validator.validateCreate(fieldOfActivity);
+    const createdFieldOfActivity = await this.repository.create(fieldOfActivity);
 
-    const fieldExists = await fieldOfActivityRepository.getByPropsNonParanoid(fieldOfActivity);
-    if (fieldExists) {
-      error.throwValidationError('Field of activity already exists.');
-    }
-
-    const createdFieldOfActivity = await fieldOfActivityRepository.create(fieldOfActivity);
-
-    return await this.get(createdFieldOfActivity.id);
+    return createdFieldOfActivity;
   }
 
-  async update(id, newData) {
-    if (newData.id !== undefined) {
-      error.throwValidationError('You can not change the id.');
-    }
-
-    await this.get(id);
-    await fieldOfActivityRepository.update(id, newData);
+  async update(id, data) {
+    await this.validator.validateUpdate(id, data);
+    await this.repository.update(id, data);
 
     return await this.get(id);
   }
@@ -33,4 +19,5 @@ class FieldOfActivityService extends CrudService {
 module.exports = new FieldOfActivityService({
   repositoryName: 'fieldOfActivity',
   modelName: 'Field of activity',
+  validatorName: 'fieldOfActivity',
 });
